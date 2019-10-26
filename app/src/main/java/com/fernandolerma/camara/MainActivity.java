@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String direccion_Imagen;
+
     private File crearFoto() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -87,21 +88,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void obtenerImagen() {
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        Bitmap foto = BitmapFactory.decodeFile(direccion_Imagen, bmOptions);
+        Bitmap foto = BitmapFactory.decodeFile(direccion_Imagen, new BitmapFactory.Options());
         foto= corregirRotacion(direccion_Imagen, foto);
         if(foto!=null) {
             foto= comprimirImagen(foto, 1280);
             setTitle("Bytes: " + obtenerTamañoImagen(foto) + " Resolución: " + foto.getHeight() + "x" + foto.getWidth());
             imageView.setImageBitmap(foto);
+            eliminarFoto(direccion_Imagen);
         }
     }
 
@@ -158,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    public static void eliminarFoto(String ruta){
+        File file = new File(ruta);
+        file.delete();
     }
 
     /*public Bitmap comprimirImagen(Bitmap bm, int newHeight, int newWidth) {
